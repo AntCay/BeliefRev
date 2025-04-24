@@ -1,33 +1,46 @@
-def add_command():
+def add_command(belief_base):
     print("add_command yet to be implemented")
 
-def clear_command():
-    print("clear_command yet to be implemented")
+def print_belief_base(belief_base):
+    print("--------------------------------------")
+    print("Belief base:")
+    if not belief_base:
+        print("EMPTY")
+    else:
+        for b in belief_base:
+            print(b)
+    print("--------------------------------------")
 
-def entails_command():
+def clear_command():
+    return []
+
+def entails_command(belief_base):
     print("entails_command yet to be implemented")
 
-# return false if command is quit, true otherwise
-def get_input() -> bool:
-    valid_commands = ['a', 'e', 'c', 'q']
+# boolean is false if command is 'q' and the agent should be quit, true otherwise
+def process_input(belief_base):
+    valid_commands = ['a', 'b', 'e', 'c', 'q']
     command = input("Input command: ")
     print("""======================================
 COMMAND RESULT:""")
     if command not in valid_commands:
         print("INVALID COMMAND")
     if command == 'a':
-        add_command()
+        belief_base = add_command(belief_base)
+    elif command == 'b':
+        print_belief_base(belief_base)
     elif command == 'c':
-        clear_command()
+        belief_base = clear_command()
     elif command == 'e':
-        entails_command()
+        belief_base = entails_command(belief_base)
     elif command == 'q':
-        return False
+        return False, belief_base
     print("======================================")
-    return True
+    return True, belief_base
 
 def main():
     # agent loop
+    belief_base = []
     agent_running = True
     while agent_running:
         print("""
@@ -36,13 +49,14 @@ belief revision agent
 --------------------------------------
 commands:
 - `a`: add a statement to the belief base
+- `b`: print belief base
 - `c`: clear and item from the belief base
 - `e`: enter a statement to check if it is entailed by the belief base
 - `q`: quit the agent
 --------------------------------------
               """)
-        agent_running = get_input()
+
+        agent_running, belief_base = process_input(belief_base)
 
 if __name__ == "__main__":
     main()
-
