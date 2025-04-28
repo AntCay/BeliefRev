@@ -1,6 +1,7 @@
 from sympy import symbols
 from sympy.logic.boolalg import to_cnf, Implies, Or, And, Not, Equivalent
 import itertools
+import copy
 
 def preprocess_equivalent(expr_str):
     if '<>' in expr_str:
@@ -8,18 +9,6 @@ def preprocess_equivalent(expr_str):
         return "Equivalent("+ preprocess_equivalent(expr_str[:x]) + "," + preprocess_equivalent(expr_str[x+2:]) + ")"
     else:
         return expr_str
-    
-# def extract_clauses(expr):
-#     def get_literals(e):
-#         if isinstance(e, Or):
-#             return tuple(str(arg) for arg in e.args)
-#         else:
-#             return dissosiatestr(e)
-
-#     if isinstance(expr, And):
-#         return set(get_literals(arg) for arg in expr.args)
-#     else:
-#         return {get_literals(expr)}
 
 def extract_clauses(expr):
     """Extract clauses and literals from a CNF expression as a list of lists."""
@@ -56,62 +45,57 @@ def extract_clauses(expr):
 
 def resolve(clause1, clause2):
     """Perform resolution between two clauses and return the resolved clause."""
-    resolved_clause = []  # List to store the resolved literals
+    resolved_clause = []
+    clause1_tmp = copy.copy(clause1)
+    clause2_tmp = copy.copy(clause2)
     for x in clause1:
         for y in clause2:
             if x == '~' + y or y == '~' + x:
-                clause2.remove(y)
-                clause1.remove(x)
-    
-    # Combine the remaining literals from both clauses into the resolved clause
-    resolved_clause = clause1 + clause2
-    
-    # If the clause is empty after resolution, we found a contradiction
-    return resolved_clause if resolved_clause else None
-
+                clause2_tmp.remove(y)
+                clause1_tmp.remove(x)
+                resolved_clause.append(clause1_tmp + clause2_tmp)
+    return resolved_clause
 
 def resolution(belief_base, phi):
     phi = preprocess_equivalent(phi) 
     phi = Not(phi)  # Negate the query
     phi = to_cnf(phi)
     phi_clauses = extract_clauses(phi)
-    print("Query Clauses:", phi_clauses)
-    # return
+    # print("Query Clauses:", phi_clauses)
     belief_base_clauses = []
     
     for i in range(len(belief_base)):
         belief_base_clauses += extract_clauses(to_cnf(preprocess_equivalent(belief_base[i][0])))
-    print("Knowledge Base Clauses:", belief_base_clauses)
+    # print("Knowledge Base Clauses:", belief_base_clauses)
     
     # Combine knowledge base and negated query clauses
     clauses = belief_base_clauses + phi_clauses
-    print("Combined Clauses:", clauses)
-
-    while True:
-        new_clauses = []
+    # print("Combined Clauses:", clauses)
+    new_clauses = []
+    
+    while True:   
         for i in range(len(clauses)):
             for j in range(i + 1, len(clauses)):
-                clause1, clause2 = clauses[i], clauses[j]
-                resolved_clause = resolve(clause1[:], clause2[:])  # Create copies to avoid modifying original clauses
+                clause1 = clauses[i]
+                clause2 = clauses[j]
+                resolved_clauses = resolve(clause1, clause2)
+                # print("Resolved Clauses:", resolved_clauses)
+                for c in resolved_clauses:
+                    if not c:
+                        return True
+                    new_clauses.append(c)
+                # print("New Clauses:", new_clauses)
+        if all(item in clauses for item in new_clauses):
+            return False
+        for item in new_clauses:
+            if item not in clauses:
+                clauses.append(item)
                 
-                if resolved_clause is None:
-                    return True  # Found the empty clause, so the set is unsatisfiable (entailment holds)
-                
-                if resolved_clause not in clauses and resolved_clause not in new_clauses:
-                    new_clauses.append(resolved_clause)  # Add new clause if it's not already present
-        
-        if not new_clauses:
-            return False  # No new clauses were added, no resolution is possible
-        
-        # Add new clauses to the original list
-        clauses.extend(new_clauses)
-
-
 if __name__ == "__main__":
     input_str = "r"
-    belief_base = [("~q",2), ("p|q",1)]
+    belief_base = [("p", 2), ("p>>q", 1)]
 
-    print(resolution(belief_base, input_str))
+    resolution(belief_base, input_str)
 
 
 # def add_command(belief_base):
