@@ -6,10 +6,10 @@ pip install -r requirements.txt
 python main.py
 ```
 ## commands
-`a` - add formula to the belief base. each propositional variable should be a single letter or series of letters (case sensitive)
+`a` - add formula to the belief base. each propositional variable should be a single letter capital letter
 ```
 Input Command: a
-Formula: p&~q
+Formula: Q & ~P
 ```
 ### operator precedence
 ### NOT SURE IF THIS IS TRUE ANYMORE

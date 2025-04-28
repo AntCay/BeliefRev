@@ -1,25 +1,53 @@
-class Agent:
-    def add_command(self, belief_base):
-        print("add_command yet to be implemented")
+from sympy import symbols
+from sympy.parsing.sympy_parser import parse_expr
+from sympy.logic.boolalg import And, Not, Implies
+from sympy.logic.inference import satisfiable
 
-    def print_belief_base(self, belief_base):
+
+class Agent:
+    KB_parsed = []
+    KB_strs = []
+    symbols = {}
+
+    def add_command(self):
+        inp = input("Formula to add to knowledge base: ")
+        for c in inp:
+            if ord(c) >= ord('A') and ord(c) <= ord('Z'):
+                if c not in self.symbols.keys():
+                    self.symbols[c] = symbols(c)
+        self.KB_strs.append(inp)
+        self.parse_KB()
+
+    def parse_KB(self):
+        self.KB = [parse_expr(s, self.symbols) for s in self.KB_strs]
+
+    def print_belief_base(self):
         print("--------------------------------------")
         print("Belief base:")
-        if not belief_base:
+        if not self.KB_strs:
             print("EMPTY")
         else:
-            for b in belief_base:
+            for b in self.KB_strs:
                 print(b)
         print("--------------------------------------")
 
     def clear_command(self):
-        return []
+        self.symbols = {}
+        self.KB_strs = []
+        self.KB_parsed = []
 
-    def entails_command(self, belief_base):
-        print("entails_command yet to be implemented")
+    def entails_command(self):
+        inp = input("Enter formula to check for entailment: ")
+        for c in inp:
+            if ord(c) >= ord('A') and ord(c) <= ord('Z'):
+                if c not in self.symbols.keys():
+                    self.symbols[c] = symbols(c)
+        KB_entailment = And(*self.KB_parsed, Not(parse_expr(inp)))
+        [print(kb) for kb in self.KB_parsed]
+        print("KB entails " + inp) if not satisfiable(KB_entailment) else print("KB does entail " + inp)
 
     # boolean is false if command is 'q' and the agent should be quit, true otherwise
-    def process_input(self, belief_base):
+    def process_input(self):
         valid_commands = ['a', 'b', 'e', 'c', 'q']
         command = input("Input command: ")
         print("""======================================
@@ -27,21 +55,20 @@ COMMAND RESULT:""")
         if command not in valid_commands:
             print("INVALID COMMAND")
         if command == 'a':
-            belief_base = self.add_command(belief_base)
+            self.add_command()
         elif command == 'b':
-            self.print_belief_base(belief_base)
+            self.print_belief_base()
         elif command == 'c':
-            belief_base = self.clear_command()
+            self.clear_command()
         elif command == 'e':
-            belief_base = self.entails_command(belief_base)
+            self.entails_command()
         elif command == 'q':
-            return False, belief_base
+            return False
         print("======================================")
-        return True, belief_base
+        return True
 
     def main(self):
         # agent loop
-        belief_base = []
         agent_running = True
         while agent_running:
             print("""
@@ -57,7 +84,7 @@ commands:
 --------------------------------------
                   """)
 
-            agent_running, belief_base = self.process_input(belief_base)
+            agent_running = self.process_input()
 
 if __name__ == "__main__":
     agent = Agent()
