@@ -12,6 +12,7 @@ Input Command: a
 Formula: p&~q
 ```
 ### operator precedence
+### NOT SURE IF THIS IS TRUE ANYMORE
 the high operaters are up on this list, the higher precedence they have, meaning they will be parsed before the ones below them
 - `(<formula>)` - innermost sets of parentheses parsed first
 - `~` - not
