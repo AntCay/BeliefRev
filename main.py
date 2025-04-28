@@ -51,7 +51,7 @@ belief revision agent
 commands:
 - `a`: add a statement to the belief base
 - `b`: print belief base
-- `c`: clear and item from the belief base
+- `c`: clear the belief base
 - `e`: enter a statement to check if it is entailed by the belief base
 - `q`: quit the agent
 --------------------------------------
