@@ -96,4 +96,3 @@ if __name__ == "__main__":
     belief_base = [("p", 2), ("p&q&r", 1)]
 
     print(resolution(belief_base, input_str))
-

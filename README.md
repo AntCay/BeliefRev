@@ -1,3 +1,11 @@
+# TODO:
+add commands for:
+- entailment(add)
+- contraction
+- revision
+
+other:
+- mastermind
 # BeliefRev
 Python based software that implement a belief revision mechanisim based on a belief based implementation.
 # usage
