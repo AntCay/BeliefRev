@@ -1,6 +1,7 @@
 from revision import *
 from sympy.logic.boolalg import simplify_logic
 import copy
+from agent import Agent
 
 def succces(agent, new_belief):
     # Check if the new belief is already entailed by the belief base
@@ -13,6 +14,17 @@ def succces(agent, new_belief):
         if i[0] == new_belief:
             return True
     return False
+
+def success_contraction():
+    agent: Agent = Agent()
+
+    agent.add_command("a")
+    agent.add_command("a>>b")
+
+    agent.delete_command("b")
+
+    print("Success contraction test: " + str(check_consistency(agent.KB_strs, "~b")))
+
 
 def inclusion(agent, new_belief):
     exp_agent = copy.copy(agent)
@@ -61,4 +73,7 @@ def extentionality(agent, new_belif_a, new_belif_b):
     else: 
         return "The two formulas are not equivalent."
         
+if __name__ == "__main__":
+    success_contraction()
+
     

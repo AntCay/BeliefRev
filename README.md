@@ -5,11 +5,8 @@ Python based software that implement a belief revision mechanisim based on a bel
 pip install -r requirements.txt
 python main.py
 ```
-## commands
-`a` - add formula to the belief base. each propositional variable should be a single letter or series of letters (case sensitive)
-```
-Input Command: a
-Formula: p&~q
+# INSTRUCTIONS:
+__IMPORTANT:__ all variables must be lowercase letters, for some reason
 ```
 ### operator precedence
 ### NOT SURE IF THIS IS TRUE ANYMORE
