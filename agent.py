@@ -10,9 +10,8 @@ class Agent:
     KB_strs = []
     symbols = {}
 
-    def add_command(self, inp):
+    def expand_command(self, inp):
         expansion(self, inp)
-        self.print_belief_base()
         # self.KB_strs.append((inp, self.kb_num))
         # self.kb_num += 1
 
@@ -26,13 +25,11 @@ class Agent:
                 print(str(b[1]) + ". " + b[0])
         print("--------------------------------------")
 
-    def delete_command(self, inp):
+    def contract_command(self, inp):
         contract(self, str(Not(inp)))
-        self.print_belief_base()
 
     def revise_command(self, inp):
         revise(self, inp)
-        self.print_belief_base()
 
     def clear_command(self):
         self.symbols = {}
@@ -52,7 +49,7 @@ class Agent:
             inp = input("Formula to add to knowledge base: ")
             print("""======================================
 COMMAND RESULT:""")
-            self.add_command(inp)
+            self.expand_command(inp)
         elif command == 'b':
             self.print_belief_base()
         elif command == 'c':
@@ -61,7 +58,7 @@ COMMAND RESULT:""")
             inp = input("Enter belief to contract from belief base: ")
             print("""======================================
 COMMAND RESULT:""")
-            self.delete_command(inp)
+            self.contract_command(inp)
         elif command == 'e':
             inp = input("Fomula to check for entailment: ")
             print("""======================================
@@ -98,3 +95,4 @@ commands:
                   """)
 
             agent_running = self.process_input()
+            self.print_belief_base()

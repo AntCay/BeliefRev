@@ -18,13 +18,12 @@ def succces(agent, new_belief):
 def success_contraction():
     agent: Agent = Agent()
 
-    agent.add_command("a")
-    agent.add_command("a>>b")
+    agent.expand_command("a")
+    agent.expand_command("a>>b")
 
-    agent.delete_command("b")
+    agent.contract_command("b")
 
-    print("Success contraction test: " + str(check_consistency(agent.KB_strs, "~b")))
-
+    print("Success contraction test: " + str(not includes_clause_in_closure_of_knowledge_base(agent, "b")))
 
 def inclusion(agent, new_belief):
     exp_agent = copy.copy(agent)
@@ -35,6 +34,21 @@ def inclusion(agent, new_belief):
     if all(elem in exp_belief for elem in rev_belief):
         return True
     return False
+
+def inclusion_contraction():
+    agent: Agent = Agent()
+
+    agent.expand_command("a")
+    agent.expand_command("a>>b")
+    agent.expand_command("c")
+
+    before_kb = set(agent.KB_strs)
+
+    agent.contract_command("b")
+    
+    after_kb = set(agent.KB_strs)
+
+    print("Inclusion contraction test: " + str(after_kb.issubset(before_kb)))
 
 def vacuity(agent, new_belief):
     # Check if the new belief is already entailed by the belief base
@@ -52,6 +66,22 @@ def vacuity(agent, new_belief):
         return exp_belief == rev_belief
     else:
         return "The negated new belief is already in the knowledge base."
+
+def vacuity_contraction():
+    agent: Agent = Agent()
+
+    agent.expand_command("a")
+    agent.expand_command("a>>b")
+    agent.expand_command("c")
+
+    before_kb = agent.KB_strs
+
+    agent.contract_command("d")
+
+    after_kb = agent.KB_strs
+
+    print("Vacuity contraction test: " + str(before_kb == after_kb))
+
 
 def consistency(agent, new_belief):
     # check consistency of the new belief and the belief base
@@ -72,8 +102,38 @@ def extentionality(agent, new_belif_a, new_belif_b):
         return a_rev == b_rev
     else: 
         return "The two formulas are not equivalent."
-        
+
+def extentionality_contraction():
+    agentA: Agent = Agent()
+    agentC: Agent = Agent()
+
+    agentA.expand_command("a")
+    agentA.expand_command("c")
+    agentA.expand_command("a>>b")
+    agentA.expand_command("a<>c")
+    agentA.contract_command("a")
+    contract_A_kb = agentA.KB_strs
+
+    agentC.expand_command("a")
+    agentC.expand_command("c")
+    agentC.expand_command("a>>b")
+    agentC.expand_command("a<>c")
+    agentC.contract_command("c")
+    contract_C_kb = agentC.KB_strs
+
+    [print(x) for x in agentA.KB_strs]
+    [print(x) for x in agentC.KB_strs]
+    print("Extentionality contraction test: " + str(contract_A_kb == contract_C_kb))
+
+
+# HELPER FUNCTIONS:
+def includes_clause_in_closure_of_knowledge_base(agent, clause):
+    return not check_consistency(agent.KB_strs, str(Not(clause)))
+
 if __name__ == "__main__":
     success_contraction()
+    inclusion_contraction()
+    vacuity_contraction()
+    extentionality_contraction()
 
     
