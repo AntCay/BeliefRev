@@ -36,23 +36,23 @@ class Mastermind:
         guess.sort(key=lambda e : [e[x][2] for x in range(len(e))])
         goal_state.sort(key=lambda e : [e[x][2] for x in range(len(e))])
         feedback = ""
-        # Generate exact matches
+
         for i, entry in enumerate(guess):
+            # Generate exact matches
             if entry == goal_state[i]:
                 feedback += "".join(entry) + '&'
             else:
-                if not any(entry[0] == x for x in self.goal_colours):
+                if not any(entry[0][0] == x for x in self.goal_colours):
                     feedback += '('
                     for spot in self.spots:
                         feedback += '~' + "".join(entry[0][0]) + spot + '&'
                     feedback = feedback[:-1] + ')' + '&'
                 else:
-                    feedback += '~' + str(entry) + '&'
+                    feedback += '~' + str(entry[0]) + '&'
         feedback = feedback[:-1]
         return feedback
 
 game = Mastermind()
-#print(game.init_state)
+print(game.init_state)
 print(game.goal_state)
-#print(extract_clauses(game.cnf_goal))
 print(game.guess_state("y_1&p_2&m_3&b_4"))
