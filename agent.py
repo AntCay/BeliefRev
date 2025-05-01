@@ -10,8 +10,7 @@ class Agent:
     KB_strs = []
     symbols = {}
 
-    def add_command(self):
-        inp = input("Formula to add to knowledge base: ")
+    def add_command(self, inp):
         expansion(self, inp)
         self.print_belief_base()
         # self.KB_strs.append((inp, self.kb_num))
@@ -27,13 +26,11 @@ class Agent:
                 print(str(b[1]) + ". " + b[0])
         print("--------------------------------------")
 
-    def delete_command(self):
-        inp = input("Enter belief to contract from belief base: ")
+    def delete_command(self, inp):
         delete_belief(self, inp)
         self.print_belief_base()
 
-    def revise_command(self):
-        inp = input("Enter belief to revise with belief base: ")
+    def revise_command(self, inp):
         revise(self, inp)
         self.print_belief_base()
 
@@ -42,30 +39,39 @@ class Agent:
         self.KB_strs = []
         self.kb_num = 0
 
-    def entails_command(self):
-        inp = input("Fomula to check for entailment: ")
+    def entails_command(self, inp):
         print("Entails: " + str(entailment(self.KB_strs, inp)))
 
     # boolean is false if command is 'q' and the agent should be quit, true otherwise
     def process_input(self):
         valid_commands = ['a', 'b', 'd', 'r', 'e', 'c', 'q']
         command = input("Input command: ")
-        print("""======================================
-              COMMAND RESULT:""")
         if command not in valid_commands:
             print("INVALID COMMAND")
         if command == 'a':
-            self.add_command()
+            inp = input("Formula to add to knowledge base: ")
+            print("""======================================
+COMMAND RESULT:""")
+            self.add_command(inp)
         elif command == 'b':
             self.print_belief_base()
         elif command == 'c':
             self.clear_command()
         elif command == 'd':
-            self.delete_command()
+            inp = input("Enter belief to contract from belief base: ")
+            print("""======================================
+COMMAND RESULT:""")
+            self.delete_command(inp)
         elif command == 'e':
-            self.entails_command()
+            inp = input("Fomula to check for entailment: ")
+            print("""======================================
+COMMAND RESULT:""")
+            self.entails_command(inp)
         elif command == 'r':
-            self.revise_command()
+            inp = input("Enter belief to revise with belief base: ")
+            print("""======================================
+COMMAND RESULT:""")
+            self.revise_command(inp)
         elif command == 'q':
             return False
         print("======================================")
