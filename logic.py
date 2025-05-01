@@ -56,17 +56,25 @@ def resolve(clause1, clause2):
                 resolved_clause.append(clause1_tmp + clause2_tmp)
     return resolved_clause
 
-def resolution(belief_base, phi):
-    phi = preprocess_equivalent(phi) 
-    phi = Not(phi)  # Negate the query
-    phi = to_cnf(phi)
-    phi_clauses = extract_clauses(phi)
+def resolution(belief_base=[], phi=""):
+    phi_clauses = []
+    if not phi == "":
+        phi = preprocess_equivalent(phi) 
+        phi = Not(phi)  # Negate the query
+        phi = to_cnf(phi)
+        phi_clauses = extract_clauses(phi)
     # print("Query Clauses:", phi_clauses)
-    belief_base_clauses = []
     
-    for i in range(len(belief_base)):
-        belief_base_clauses += extract_clauses(to_cnf(preprocess_equivalent(belief_base[i][0])))
-    # print("Knowledge Base Clauses:", belief_base_clauses)
+    belief_base_clauses = []
+    if belief_base:
+        if type(belief_base[0]) == tuple:
+            for i in range(len(belief_base)):
+                belief_base_clauses += extract_clauses(to_cnf(preprocess_equivalent(belief_base[i][0])))
+        elif type(belief_base[0]) == str:
+            for i in range(len(belief_base)):
+                belief_base_clauses += extract_clauses(to_cnf(preprocess_equivalent(belief_base[i])))
+    # print("Knowledge Base Clauses:", belief_base_clauses) 
+    
     
     # Combine knowledge base and negated query clauses
     clauses = belief_base_clauses + phi_clauses
