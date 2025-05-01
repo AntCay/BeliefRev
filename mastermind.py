@@ -44,19 +44,15 @@ class Mastermind:
                 if not any(entry[0] == x for x in self.goal_colours):
                     feedback += '('
                     for spot in self.spots:
-                        feedback += '~' + "".join(entry[0][0]) + spot + '|'
+                        feedback += '~' + "".join(entry[0][0]) + spot + '&'
                     feedback = feedback[:-1] + ')' + '&'
                 else:
                     feedback += '~' + str(entry) + '&'
         feedback = feedback[:-1]
-        print(to_cnf(feedback))
-
-
-
-
+        return feedback
 
 game = Mastermind()
 #print(game.init_state)
-#print(game.goal_state)
+print(game.goal_state)
 #print(extract_clauses(game.cnf_goal))
-game.guess_state("y_1&p_2&m_3&y_4")
+print(game.guess_state("y_1&p_2&m_3&b_4"))
