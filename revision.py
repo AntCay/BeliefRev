@@ -4,7 +4,17 @@ from itertools import combinations
 
 def contract(agent, new_belief):
     contracted_belief = copy.copy(agent.KB_strs)
+    contract_after = []
+    for belief, _ in agent.KB_strs:
+        while "<>" in belief:
+            sp = belief.split("<>", 1)
+            if str(Not(sp[0])) == new_belief:
+                contract_after.append(sp[1])
+            if str(Not(sp[1])) == new_belief:
+                contract_after.append(sp[0])
+            belief = sp[1]
     if check_consistency(contracted_belief, new_belief):
+        [contract(agent, str(Not(x))) for x in contract_after]
         return contracted_belief
     else:
         for i in range(len(contracted_belief) - 1, 0, -1):
@@ -13,6 +23,7 @@ def contract(agent, new_belief):
             for comb in combs:
                 if check_consistency(comb, new_belief):
                     agent.KB_strs = list(comb)
+                    [contract(agent, str(Not(x))) for x in contract_after]
                     return comb
 
     agent.KB_strs = []

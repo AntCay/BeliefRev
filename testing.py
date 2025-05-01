@@ -121,8 +121,6 @@ def extentionality_contraction():
     agentC.contract_command("c")
     contract_C_kb = agentC.KB_strs
 
-    [print(x) for x in agentA.KB_strs]
-    [print(x) for x in agentC.KB_strs]
     print("Extentionality contraction test: " + str(contract_A_kb == contract_C_kb))
 
 
