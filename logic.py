@@ -1,5 +1,4 @@
-from sympy import symbols
-from sympy.logic.boolalg import to_cnf, Implies, Or, And, Not, Equivalent
+from sympy.logic.boolalg import to_cnf, Or, And, Not
 import itertools
 import copy
 
@@ -42,66 +41,72 @@ def extract_clauses(expr):
     
     return clauses
 
-
+# Function to perform resolution between two clauses and return the resolved clause
 def resolve(clause1, clause2):
-    """Perform resolution between two clauses and return the resolved clause."""
     resolved_clause = []
     clause1_tmp = copy.copy(clause1)
     clause2_tmp = copy.copy(clause2)
     for x in clause1:
         for y in clause2:
             if x == '~' + y or y == '~' + x:
-                clause2_tmp.remove(y)
-                clause1_tmp.remove(x)
+                if y in clause2_tmp: clause2_tmp.remove(y)
+                if x in clause1_tmp: clause1_tmp.remove(x)
                 resolved_clause.append(clause1_tmp + clause2_tmp)
     return resolved_clause
 
-def resolution(belief_base=[], phi=""):
-    phi_clauses = []
-    if not phi == "":
-        phi = preprocess_equivalent(phi) 
-        phi = Not(phi)  # Negate the query
-        phi = to_cnf(phi)
-        phi_clauses = extract_clauses(phi)
-    # print("Query Clauses:", phi_clauses)
-    
-    belief_base_clauses = []
-    if belief_base:
-        if type(belief_base[0]) == tuple:
-            for i in range(len(belief_base)):
-                belief_base_clauses += extract_clauses(to_cnf(preprocess_equivalent(belief_base[i][0])))
-        elif type(belief_base[0]) == str:
-            for i in range(len(belief_base)):
-                belief_base_clauses += extract_clauses(to_cnf(preprocess_equivalent(belief_base[i])))
-    # print("Knowledge Base Clauses:", belief_base_clauses) 
-    
-    
-    # Combine knowledge base and negated query clauses
-    clauses = belief_base_clauses + phi_clauses
-    # print("Combined Clauses:", clauses)
+def resolution(clauses):
     new_clauses = []
-    
     while True:   
-        for i in range(len(clauses)):
-            for j in range(i + 1, len(clauses)):
-                clause1 = clauses[i]
-                clause2 = clauses[j]
-                resolved_clauses = resolve(clause1, clause2)
-                # print("Resolved Clauses:", resolved_clauses)
-                for c in resolved_clauses:
-                    if not c:
-                        return True
-                    new_clauses.append(c)
-                # print("New Clauses:", new_clauses)
+        for clause1, clause2 in itertools.combinations(clauses, 2):
+            resolved_clauses = resolve(clause1, clause2)
+            # print("Resolved Clauses:", resolved_clauses)
+            for c in resolved_clauses:
+                if not c:
+                    return True
+                new_clauses.append(c)
+            # print("New Clauses:", new_clauses)
         if all(item in clauses for item in new_clauses):
             return False
         for item in new_clauses:
             if item not in clauses:
                 clauses.append(item)
-                
-if __name__ == "__main__":
-    input_str = "~r"
-    belief_base = [("p", 2), ("p&q&r", 1)]
 
-    print(resolution(belief_base, input_str))
+# function to check belief base entails the query (new belief)                
+def entailment(belief_base=[], phi=""):
+    phi_clauses = []
+    # Negated, convert to CNF and extract clauses from the query
+    if not phi == "":
+        phi = preprocess_equivalent(phi) 
+        phi = Not(phi)  # Negate the query
+        phi = to_cnf(phi)
+        phi_clauses = extract_clauses(phi)
+    
+    belief_base_clauses = []
+    # Convert each belief base formula to CNF and extract clauses
+    for i in range(len(belief_base)):
+        belief_base_clauses += extract_clauses(to_cnf(preprocess_equivalent(belief_base[i][0])))
 
+    # Combine belif base and negated query clauses
+    clauses = belief_base_clauses + phi_clauses
+    
+    # perform resolution to check if the negated query is a logical consequence of the belief base
+    return resolution(clauses)
+
+# function to check consustency of a set of formulas
+def check_consistency(formulas=[], new_formula=""):
+    new_formula_clauses = []
+    # Convert the new formula to CNF and extract clauses
+    if not new_formula == "":
+        new_formula_clauses = extract_clauses(to_cnf(preprocess_equivalent(new_formula)))
+    
+    formulas_clauses = []
+    # Convert each formula in the set of formulas to CNF and extract clauses
+    if formulas:
+        for i in range(len(formulas)):
+            formulas_clauses += extract_clauses(to_cnf(preprocess_equivalent(formulas[i][0])))
+    
+    # Combine the clauses from the formulas and the new formula            
+    clauses = formulas_clauses + new_formula_clauses
+    
+    # if resolution return false means the formulas is consistent
+    return not resolution(clauses)
