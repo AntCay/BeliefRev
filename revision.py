@@ -1,6 +1,8 @@
 from  logic import *
 import copy
 from itertools import combinations
+from sympy.logic.boolalg import And
+from sympy.parsing.sympy_parser import parse_expr
 
 def contract(agent, new_belief):
     contracted_belief = copy.copy(agent.KB_strs)
@@ -44,13 +46,22 @@ def delete_belief(agent, new_belief):
 
 def expansion(agent, new_belief):
     expanded_belief = copy.copy(agent.KB_strs)
-
+    new_belief_list = []
+    sympy_exp = parse_expr(new_belief, evaluate=False)
+    if isinstance(sympy_exp, And) :
+        new_belief_cnf = to_cnf(new_belief).args
+        new_belief_list = list(new_belief_cnf)
+    else:
+        new_belief_list.append(new_belief)
+        
+    belief_list = []
     for belief, _ in expanded_belief:
-        if new_belief == belief:
-            return expanded_belief
-
-    expanded_belief.append((new_belief, agent.kb_num))
-    agent.kb_num += 1
+        belief_list.append(belief)
+        
+    for i in new_belief_list:
+        if str(i) not in belief_list:
+            expanded_belief.append((str(i), agent.kb_num))
+            agent.kb_num += 1
     agent.KB_strs = expanded_belief
     return expanded_belief
 
@@ -70,6 +81,14 @@ def revise(agent, new_belief):
     # if not new_belief == "" and not new_belief in formulas:
     #     expansion(agent, new_belief)
     # return agent.KB_strs
-    contract(agent, new_belief)
-    expansion(agent, new_belief)
+    new_belief_list = []
+    sympy_exp = parse_expr(new_belief, evaluate=False)
+    if isinstance(sympy_exp, And) :
+        new_belief_cnf = to_cnf(new_belief).args
+        new_belief_list = list(new_belief_cnf)
+    else:
+        new_belief_list.append(new_belief)
+    for i in new_belief_list:
+        contract(agent, str(i))
+        expansion(agent, str(i))
     return agent.KB_strs
