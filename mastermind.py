@@ -4,6 +4,8 @@ from logic import extract_clauses
 
 class Mastermind:
     def __init__(self):
+        self.guess_count = 0
+        self.game_over = False
         self.colours = "rbgopbwmy"
         self.spots = ("_1", "_2", "_3", "_4")
         self.init_state = ""
@@ -25,10 +27,12 @@ class Mastermind:
 
 
     def guess_state(self, guess):
+        self.guess_count += 1
         guess = to_cnf(guess)
         # Check if guess is goal state
         if guess == self.cnf_goal:
-            return True
+            self.game_over = True
+            return self.guess_count
         guess = extract_clauses(guess)
         goal_state = extract_clauses(self.cnf_goal)
 
@@ -52,7 +56,12 @@ class Mastermind:
         feedback = feedback[:-1]
         return feedback
 
-game = Mastermind()
-print(game.init_state)
-print(game.goal_state)
-print(game.guess_state("y_1&p_2&m_3&b_4"))
+    @staticmethod
+    def generate_guess(code_breaker):
+        guess = ""
+        kb = extract_clauses(to_cnf(code_breaker.KB_strs[0][0]))
+        for slot in kb:
+            guess += random.choice(slot) + "&"
+        guess = guess[:-1]
+        return guess
+
