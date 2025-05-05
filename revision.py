@@ -56,7 +56,7 @@ def expansion(agent, new_belief):
         
     belief_list = []
     for belief, _ in expanded_belief:
-        belief_list.append(belief)
+        belief_list.append(belief.replace(" ", ""))
         
     for i in new_belief_list:
         if str(i) not in belief_list:
