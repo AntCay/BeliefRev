@@ -47,7 +47,7 @@ def delete_belief(agent, new_belief):
 def expansion(agent, new_belief):
     expanded_belief = copy.copy(agent.KB_strs)
     new_belief_list = []
-    sympy_exp = parse_expr(new_belief, evaluate=False)
+    sympy_exp = parse_expr(preprocess_equivalent(new_belief), evaluate=False)
     if isinstance(sympy_exp, And) :
         new_belief_cnf = to_cnf(new_belief).args
         new_belief_list = list(new_belief_cnf)
@@ -82,7 +82,7 @@ def revise(agent, new_belief):
     #     expansion(agent, new_belief)
     # return agent.KB_strs
     new_belief_list = []
-    sympy_exp = parse_expr(new_belief, evaluate=False)
+    sympy_exp = parse_expr(preprocess_equivalent(new_belief), evaluate=False)
     if isinstance(sympy_exp, And) :
         new_belief_cnf = to_cnf(new_belief).args
         new_belief_list = list(new_belief_cnf)
