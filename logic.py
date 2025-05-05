@@ -96,5 +96,5 @@ def entailment(belief_base=[], phi=""):
 def check_consistency(formulas=[], new_formula=""):
     negated_new_formula = str(Not(new_formula))
     
-    # if resolution return false means the formulas is consistent
+    # negated formula is not entailed by the belief base, so they are consistent
     return not entailment(formulas, negated_new_formula) 
