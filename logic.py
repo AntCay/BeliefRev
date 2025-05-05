@@ -100,7 +100,8 @@ def entailment(belief_base=[], phi=""):
 # function to check consustency of a set of formulas
 def check_consistency(formulas=[], new_formula=""):
     if not new_formula == "":
-        negated_new_formula = str(Not(new_formula))
+        negated_new_formula = str(Not(preprocess_equivalent(new_formula)))
+        print("Negated new formula: ", negated_new_formula)
     else:
         negated_new_formula = ""
     
