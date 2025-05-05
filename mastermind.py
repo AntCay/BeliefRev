@@ -1,6 +1,6 @@
 from sympy.logic.boolalg import to_cnf
 import random
-from logic import extract_clauses
+from logic import extract_clauses, resolve, resolution
 
 class Mastermind:
     def __init__(self):
@@ -59,8 +59,18 @@ class Mastermind:
     @staticmethod
     def generate_guess(code_breaker):
         guess = ""
-        kb = extract_clauses(to_cnf(code_breaker.KB_strs[0][0]))
-        for slot in kb:
+        main_clause = extract_clauses(to_cnf(code_breaker.KB_strs[0][0]))
+
+        # for clause in code_breaker.KB_strs:
+        #     new_clause = []
+        #     for subclause in extract_clauses(to_cnf(clause[0])):
+        #         for main_subclause in main_clause:
+        #             resolved_clause = resolve(main_subclause, subclause)
+        #             if resolved_clause:
+        #                 main_subclause = resolve(main_subclause, subclause)
+        #     main_clause += new_clause
+        # print(main_clause)
+        for slot in main_clause:
             guess += random.choice(slot) + "&"
         guess = guess[:-1]
         return guess
