@@ -4,14 +4,14 @@ import copy
 from agent import Agent
 
 def succces_revision():
-    test_agent = Agent()
-    test_agent.expand_command("p")
-    test_agent.expand_command("p>>q")
+    agent = Agent()
+    agent.expand_command("a")
+    agent.expand_command("a>>b")
     new_belief = "q"
     
-    test_agent.revise_command(new_belief)
+    agent.revise_command(new_belief)
     
-    for i in test_agent.KB_strs:
+    for i in agent.KB_strs:
         if i[0] == new_belief:
             return print("Success revision test: " + str(True))
     return print("Success revision test: " + str(False))
@@ -29,9 +29,10 @@ def success_contraction():
 def inclusion_revision():
     agent = Agent()
     
-    agent.expand_command("p")
-    agent.expand_command("p>>q")
-    new_belief = "q"
+    agent.expand_command("a")
+    agent.expand_command("a>>b")
+    agent.expand_command("c")
+    new_belief = "b"
     
     exp_agent = copy.copy(agent)
     rev_agent = copy.copy(agent)
@@ -58,9 +59,10 @@ def inclusion_contraction():
 def vacuity_revision():
     agent = Agent()
     
-    agent.expand_command("p")
-    agent.expand_command("p>>q")
-    new_belief = "q"
+    agent.expand_command("a")
+    agent.expand_command("a>>b")
+    agent.expand_command("c")
+    new_belief = "d"
     
     # extract formulas in belief base
     formulas = [i[0] for i in agent.KB_strs]
@@ -71,6 +73,7 @@ def vacuity_revision():
         rev_agent = copy.copy(agent)
         exp_agent.expand_command(new_belief)
         rev_agent.revise_command(new_belief)
+        
         return print("Vacuity Revision test : " + str(exp_agent.KB_strs == rev_agent.KB_strs))
     else:
         return print("Vacuity Revision test: The negated new belief is already in the knowledge base.")
@@ -94,9 +97,9 @@ def vacuity_contraction():
 def consistency_revision():
     agent = Agent()
     
-    agent.expand_command("p")
-    agent.expand_command("p>>q")
-    new_belief = "q"
+    agent.expand_command("a")
+    agent.expand_command("a>>b")
+    new_belief = "b"
     
     # check consistency of the new belief and the belief base
     if check_consistency(new_formula=new_belief):
@@ -112,7 +115,6 @@ def extentionality_revision():
     agent.expand_command("a<>c")
     new_belief_a = "a"
     new_belief_b = "c"
-    
     a_agent = copy.copy(agent)
     b_agent = copy.copy(agent)
     a_agent.revise_command(new_belief_a)
