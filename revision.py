@@ -4,7 +4,7 @@ from itertools import combinations
 from sympy.logic.boolalg import And, Or
 from sympy.parsing.sympy_parser import parse_expr
 
-def contract(agent, new_belief):
+def remove_inconsistency(agent, new_belief):
     contracted_belief = copy.copy(agent.KB_strs)
     contract_after = []
     for belief, _ in agent.KB_strs:
@@ -16,7 +16,7 @@ def contract(agent, new_belief):
                 contract_after.append(sp[0])
             belief = sp[1]
     if check_consistency(contracted_belief, new_belief):
-        [contract(agent, str(Not(x))) for x in contract_after]
+        [remove_inconsistency(agent, str(Not(x))) for x in contract_after]
         return contracted_belief
     else:
         for i in range(len(contracted_belief) - 1, 0, -1):
@@ -25,7 +25,7 @@ def contract(agent, new_belief):
             for comb in combs:
                 if check_consistency(comb, new_belief):
                     agent.KB_strs = list(comb)
-                    [contract(agent, str(Not(x))) for x in contract_after]
+                    [remove_inconsistency(agent, str(Not(x))) for x in contract_after]
                     return comb
 
     agent.KB_strs = []
@@ -36,7 +36,7 @@ def contract(agent, new_belief):
     #         contracted_belief.remove(agent.KB_strs[i])
     # agent.KB_strs = contracted_belief
 
-def delete_belief(agent, new_belief):
+def contract(agent, new_belief):
     contracted_belief = copy.copy(agent.KB_strs)
     delete_after = []
     add_back = []
@@ -58,7 +58,7 @@ def delete_belief(agent, new_belief):
             contracted_belief.remove(agent.KB_strs[i])
             agent.KB_strs = contracted_belief
     for d in delete_after:
-        delete_belief(agent, d)
+        contract(agent, d)
 
     for a in add_back:
         if a not in agent.KB_strs:
@@ -111,7 +111,7 @@ def revise(agent, new_belief):
     else:
         new_belief_list.append(new_belief)
     for i in new_belief_list:
-        contract(agent, str(i))
+        remove_inconsistency(agent, str(i))
         for belief, _ in agent.KB_strs:
             if isinstance(parse_expr(belief, evaluate=False), Or):
                 resolved_belief, is_skipped = resolve(extract_clauses(to_cnf(belief))[0], extract_clauses(to_cnf(i))[0])
