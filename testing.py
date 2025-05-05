@@ -21,10 +21,10 @@ def success_contraction():
 
     agent.expand_command("a")
     agent.expand_command("a>>b")
-
+    agent.expand_command("b")
     agent.contract_command("b")
 
-    print("Success contraction test: " + str(not includes_clause_in_closure_of_knowledge_base(agent, "b")))
+    print("Success contraction test: " + str(belief_not_in_belief_base(agent, "b")))
 
 def inclusion_revision():
     agent = Agent()
@@ -143,8 +143,13 @@ def extentionality_contraction():
 
 
 # HELPER FUNCTIONS:
-def includes_clause_in_closure_of_knowledge_base(agent, clause):
-    return not check_consistency(agent.KB_strs, str(Not(clause)))
+def belief_not_in_belief_base(agent, belief):
+    for b, _ in agent.KB_strs:
+        if b == belief:
+            return False
+
+    return True
+    
 
 if __name__ == "__main__":
     success_contraction()

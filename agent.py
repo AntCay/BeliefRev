@@ -26,7 +26,7 @@ class Agent:
         print("--------------------------------------")
 
     def contract_command(self, inp):
-        contract(self, str(Not(inp)))
+        delete_belief(self, inp)
 
     def revise_command(self, inp):
         revise(self, inp)

@@ -38,10 +38,32 @@ def contract(agent, new_belief):
 
 def delete_belief(agent, new_belief):
     contracted_belief = copy.copy(agent.KB_strs)
+    delete_after = []
+    add_back = []
+    for belief, i in agent.KB_strs:
+        ab = True
+        while "<>" in belief:
+            sp = belief.split("<>", 1)
+            if str(sp[0]) == new_belief:
+                delete_after.append(sp[1])
+            if str(sp[1]) == new_belief:
+                delete_after.append(sp[0])
+            if ab:
+                add_back.append((belief, i))
+                agent.KB_strs.remove((belief, i))
+                ab = False
+            belief = sp[1]
     for i in range(len(agent.KB_strs)):
         if agent.KB_strs[i][0] == new_belief:
             contracted_belief.remove(agent.KB_strs[i])
-    agent.KB_strs = contracted_belief
+            agent.KB_strs = contracted_belief
+    for d in delete_after:
+        delete_belief(agent, d)
+
+    for a in add_back:
+        if a not in agent.KB_strs:
+            agent.KB_strs.append(a)
+
     return contracted_belief
 
 def expansion(agent, new_belief):
@@ -89,7 +111,7 @@ def revise(agent, new_belief):
     else:
         new_belief_list.append(new_belief)
     for i in new_belief_list:
-        contract(agent, '~' + str(i))
+        contract(agent, str(i))
         for belief, _ in agent.KB_strs:
             if isinstance(parse_expr(belief, evaluate=False), Or):
                 resolved_belief, is_skipped = resolve(extract_clauses(to_cnf(belief))[0], extract_clauses(to_cnf(i))[0])
