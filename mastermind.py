@@ -59,19 +59,12 @@ class Mastermind:
     @staticmethod
     def generate_guess(code_breaker):
         guess = ""
-        main_clause = extract_clauses(to_cnf(code_breaker.KB_strs[0][0]))
-
-        # for clause in code_breaker.KB_strs:
-        #     new_clause = []
-        #     for subclause in extract_clauses(to_cnf(clause[0])):
-        #         for main_subclause in main_clause:
-        #             resolved_clause = resolve(main_subclause, subclause)
-        #             if resolved_clause:
-        #                 main_subclause = resolve(main_subclause, subclause)
-        #     main_clause += new_clause
-        # print(main_clause)
-        for slot in main_clause:
-            guess += random.choice(slot) + "&"
+        for k in range(1,5):
+            for belief, _ in code_breaker.KB_strs:
+                extracted_belief = extract_clauses(to_cnf(belief))[0]
+                if extracted_belief [0][0] != '~' and extracted_belief [0][2] == str(k):
+                    guess += random.choice(extracted_belief) + "&"
+                    break
         guess = guess[:-1]
         return guess
 
