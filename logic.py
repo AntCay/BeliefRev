@@ -94,19 +94,7 @@ def entailment(belief_base=[], phi=""):
 
 # function to check consustency of a set of formulas
 def check_consistency(formulas=[], new_formula=""):
-    new_formula_clauses = []
-    # Convert the new formula to CNF and extract clauses
-    if not new_formula == "":
-        new_formula_clauses = extract_clauses(to_cnf(preprocess_equivalent(new_formula)))
-    
-    formulas_clauses = []
-    # Convert each formula in the set of formulas to CNF and extract clauses
-    if formulas:
-        for i in range(len(formulas)):
-            formulas_clauses += extract_clauses(to_cnf(preprocess_equivalent(formulas[i][0])))
-    
-    # Combine the clauses from the formulas and the new formula            
-    clauses = formulas_clauses + new_formula_clauses
+    negated_new_formula = str(Not(new_formula))
     
     # if resolution return false means the formulas is consistent
-    return not resolution(clauses)
+    return not entailment(formulas, negated_new_formula) 
