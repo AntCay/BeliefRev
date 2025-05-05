@@ -15,25 +15,25 @@ def play_mastermind():
     if isinstance(feedback, str):
         print(feedback)
         code_breaker.revise_command(feedback)
-        # code_breaker.print_belief_base()
+        code_breaker.print_belief_base()
     else:
         print("Game won in " + str(feedback) + " turns!")
 
-    while not mastermind.game_over and mastermind.guess_count < 8:
+    while not mastermind.game_over:
         guess = mastermind.generate_guess(code_breaker)
+        print("Turn count: ", mastermind.guess_count)
         print("Guess: " + guess)
         feedback = mastermind.guess_state(guess)
         if isinstance(feedback, str):
             print("Feedback: " + feedback)
             code_breaker.revise_command(feedback)
-            # code_breaker.print_belief_base()
+            code_breaker.print_belief_base()
         else:
             print("Game won in " + str(feedback) + " turns!")
-    else:
-        print("Game lost in " + str(mastermind.guess_count) + " turns!")
 
 
 if __name__ == "__main__":
     play_mastermind()
     #agent = Agent()
     #agent.main()
+
