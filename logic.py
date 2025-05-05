@@ -43,6 +43,8 @@ def extract_clauses(expr):
 
 # Function to perform resolution between two clauses and return the resolved clause
 def resolve(clause1, clause2):
+    resolved_clause = []
+    skipped = True
     clause1_tmp = copy.copy(clause1)
     clause2_tmp = copy.copy(clause2)
     for x in clause1:
@@ -50,17 +52,22 @@ def resolve(clause1, clause2):
             if x == '~' + y or y == '~' + x:
                 if y in clause2_tmp: clause2_tmp.remove(y)
                 if x in clause1_tmp: clause1_tmp.remove(x)
-    resolved_clause = clause1_tmp + clause2_tmp
-    resolved_clause = list(set(resolved_clause))
-    return resolved_clause
+                skipped = False
+            elif x==y:
+                skipped = False
+    if not skipped:
+        resolved_clause = clause1_tmp + clause2_tmp
+        resolved_clause = list(set(resolved_clause))
+    return resolved_clause, skipped
 
 def resolution(clauses):
     new_clauses = []
     while True:   
         for clause1, clause2 in itertools.combinations(clauses, 2):
-            resolved_clauses = resolve(clause1, clause2)
+            resolved_clauses, is_skipped = resolve(clause1, clause2)
             # print("Resolved Clauses:", resolved_clauses)
-            if not resolved_clauses: return True
+            if not resolved_clauses and not is_skipped:
+                return True
             new_clauses.append(resolved_clauses)
             # print("New Clauses:", new_clauses)
         if all(item in clauses for item in new_clauses):

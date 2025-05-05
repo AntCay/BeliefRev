@@ -1,7 +1,7 @@
 from  logic import *
 import copy
 from itertools import combinations
-from sympy.logic.boolalg import And
+from sympy.logic.boolalg import And, Or
 from sympy.parsing.sympy_parser import parse_expr
 
 def contract(agent, new_belief):
@@ -89,6 +89,15 @@ def revise(agent, new_belief):
     else:
         new_belief_list.append(new_belief)
     for i in new_belief_list:
-        contract(agent, str(i))
+        contract(agent, '~' + str(i))
+        for belief, _ in agent.KB_strs:
+            if isinstance(parse_expr(belief, evaluate=False), Or):
+                resolved_belief, is_skipped = resolve(extract_clauses(to_cnf(belief))[0], extract_clauses(to_cnf(i))[0])
+                if resolved_belief and not is_skipped:
+                    temp = ""
+                    for c in resolved_belief:
+                        temp += c + '|'
+                    resolved_belief = temp[:-1]
+                    agent.KB_strs[agent.KB_strs.index((belief, _))] = (resolved_belief, _)
         expansion(agent, str(i))
     return agent.KB_strs
