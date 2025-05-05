@@ -3,18 +3,13 @@ Python based software that implement a belief revision mechanisim based on a bel
 # usage
 ```bash
 pip install -r requirements.txt
+# use agent
 python main.py
+# have the agent play mastermind
+python mastermind.py
+# run test
+python testing.py
 ```
-# INSTRUCTIONS:
+# IMPORTANT
 __IMPORTANT:__ all variables must be lowercase letters, for some reason
 ```
-### operator precedence
-### NOT SURE IF THIS IS TRUE ANYMORE
-the high operaters are up on this list, the higher precedence they have, meaning they will be parsed before the ones below them
-- `(<formula>)` - innermost sets of parentheses parsed first
-- `~` - not
-- `&` - and
-- `|` - or
-- `>>` - if ... then
-- `<>` - if and only if
-operators are the same precedence are parsed from left to right
