@@ -82,7 +82,7 @@ def expansion(agent, new_belief):
         
     for i in new_belief_list:
         if str(i) not in belief_list:
-            expanded_belief.append((str(i), agent.kb_num))
+            expanded_belief.append((str(i).replace(" ",""), agent.kb_num))
             agent.kb_num += 1
     agent.KB_strs = expanded_belief
     return expanded_belief
